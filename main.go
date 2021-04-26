@@ -1,9 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"net/http"
 )
 
 func main() {
-	fmt.Println("Helloo")
+	r := CreateRoutes()
+
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
