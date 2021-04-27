@@ -31,8 +31,8 @@ CREATE TABLE "test" (
 
 CREATE TABLE "test_queston" (
   "id" bigserial PRIMARY KEY,
-  "question_id" bigserial,
-  "test_id" bigserial
+  "question_id" bigserial NOT NULL,
+  "test_id" bigserial NOT NULL
 );
 
 ALTER TABLE "question" ADD FOREIGN KEY ("group_id") REFERENCES "group" ("id");
