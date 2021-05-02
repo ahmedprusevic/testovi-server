@@ -21,11 +21,11 @@ type User struct {
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
-func verifyPassword(hashedPassword, password string) error {
+func VerifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-func (u *User) hashPassword() error {
+func (u *User) HashPassword() error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -34,14 +34,15 @@ func (u *User) hashPassword() error {
 	return nil
 }
 
-func (u *User) fillFields() {
+func (u *User) FillFields() {
 	u.ID = 0
 	u.Name = html.EscapeString(strings.TrimSpace(u.Name))
 	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
+	u.Role = html.EscapeString(strings.TrimSpace(u.Role))
 	u.CreatedAt = time.Now()
 }
 
-func (u *User) validate(action string) error {
+func (u *User) Validate(action string) error {
 	switch strings.ToLower(action) {
 	case "update":
 		if u.Name == "" {
@@ -86,7 +87,7 @@ func (u *User) validate(action string) error {
 
 }
 
-func (u *User) saveUser(db *gorm.DB) (*User, error) {
+func (u *User) SaveUser(db *gorm.DB) (*User, error) {
 	err := db.Debug().Create(&u).Error
 	if err != nil {
 		return &User{}, err
@@ -94,7 +95,7 @@ func (u *User) saveUser(db *gorm.DB) (*User, error) {
 	return u, nil
 }
 
-func (u *User) findAllUsers(db *gorm.DB) (*[]User, error) {
+func (u *User) FindAllUsers(db *gorm.DB) (*[]User, error) {
 	users := []User{}
 	err := db.Debug().Model(&User{}).Limit(100).Find(&users).Error
 	if err != nil {
@@ -104,7 +105,7 @@ func (u *User) findAllUsers(db *gorm.DB) (*[]User, error) {
 
 }
 
-func (u *User) findUserById(db *gorm.DB, uid uint32) (*User, error) {
+func (u *User) FindUserById(db *gorm.DB, uid uint32) (*User, error) {
 	err := db.Debug().Model(User{}).Where("id = ?", uid).Take(&u).Error
 	if err != nil {
 		return &User{}, err
@@ -115,8 +116,8 @@ func (u *User) findUserById(db *gorm.DB, uid uint32) (*User, error) {
 	return u, err
 }
 
-func (u *User) updateUser(db *gorm.DB, uid uint32) (*User, error) {
-	err := u.hashPassword()
+func (u *User) UpdateUser(db *gorm.DB, uid uint32) (*User, error) {
+	err := u.HashPassword()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -139,7 +140,7 @@ func (u *User) updateUser(db *gorm.DB, uid uint32) (*User, error) {
 	return u, nil
 }
 
-func (u *User) deleteUser(db *gorm.DB, uid uint32) (int64, error) {
+func (u *User) DeleteUser(db *gorm.DB, uid uint32) (int64, error) {
 	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User{})
 	if db.Error != nil {
 		return 0, db.Error
