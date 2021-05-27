@@ -21,6 +21,7 @@ func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	user := models.User{}
