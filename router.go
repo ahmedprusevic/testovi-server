@@ -22,6 +22,9 @@ func CreateRoutes() *mux.Router {
 
 	r.HandleFunc("/groups", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuth(server.CreateGroup))).Methods("POST")
 	r.HandleFunc("/groups", middlewares.SetMiddlewareJSON(server.GetGroups)).Methods("GET")
+	r.HandleFunc("/groups/{id}", middlewares.SetMiddlewareJSON(server.GetGroup)).Methods("GET")
+	r.HandleFunc("/groups/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuth(server.UpdateGroup))).Methods("PUT")
+	r.HandleFunc("/groups/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuth(server.DeleteGroup))).Methods("DELETE")
 
 	//Login
 

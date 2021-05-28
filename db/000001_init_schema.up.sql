@@ -7,7 +7,7 @@ CREATE TABLE "users" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE "question" (
+CREATE TABLE "questions" (
   "id" bigserial PRIMARY KEY,
   "name" varchar NOT NULL,
   "answers" varchar[] NOT NULL,
@@ -17,34 +17,34 @@ CREATE TABLE "question" (
   "test_id" bigserial
 );
 
-CREATE TABLE "group" (
+CREATE TABLE "groups" (
   "id" bigserial PRIMARY KEY,
   "name" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE "test" (
+CREATE TABLE "tests" (
   "id" bigserial PRIMARY KEY,
   "name" varchar,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE "test_queston" (
+CREATE TABLE "test_questions" (
   "id" bigserial PRIMARY KEY,
   "question_id" bigserial NOT NULL,
   "test_id" bigserial NOT NULL
 );
 
-ALTER TABLE "question" ADD FOREIGN KEY ("group_id") REFERENCES "group" ("id");
+ALTER TABLE "questions" ADD FOREIGN KEY ("group_id") REFERENCES "groups" ("id");
 
-ALTER TABLE "question" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("id");
+ALTER TABLE "questions" ADD FOREIGN KEY ("test_id") REFERENCES "tests" ("id");
 
-ALTER TABLE "test_queston" ADD FOREIGN KEY ("question_id") REFERENCES "question" ("id");
+ALTER TABLE "test_questions" ADD FOREIGN KEY ("question_id") REFERENCES "questions" ("id");
 
-ALTER TABLE "test_queston" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("id");
+ALTER TABLE "test_questions" ADD FOREIGN KEY ("test_id") REFERENCES "tests" ("id");
 
-CREATE INDEX ON "question" ("name");
+CREATE INDEX ON "questions" ("name");
 
-CREATE INDEX ON "question" ("id");
+CREATE INDEX ON "questions" ("id");
 
-CREATE INDEX ON "test" ("name");
+CREATE INDEX ON "tests" ("name");

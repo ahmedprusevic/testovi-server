@@ -63,7 +63,7 @@ func (g *Group) UpdateGroup(db *gorm.DB, gid uint32) (*Group, error) {
 		return &Group{}, db.Error
 	}
 
-	err := db.Debug().Model(&Group{}).Where("id = ?", gid).Take(&Group{}).Error
+	err := db.Debug().Model(&Group{}).Where("id = ?", gid).Take(&g).Error
 
 	if err != nil {
 		return &Group{}, err

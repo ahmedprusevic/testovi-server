@@ -45,6 +45,7 @@ func (s *Server) CreateGroup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		formattedError := errorformatter.FormatError(err.Error())
 		responses.ERROR(w, http.StatusUnprocessableEntity, formattedError)
+		return
 	}
 
 	responses.JSON(w, http.StatusCreated, groupCreated)
