@@ -5,12 +5,12 @@ createdb:
 	docker exec -it postgres13 createdb --username=postgres --owner=postgres vedo-testovi
 
 dropdb:
-	docker exec -it postgres13 dropdb vedo-testovi -U postgres
+	docker exec -it postgres13 dropdb vedodriver-testovi -U postgres
 
 migrateup:
-	migrate -path db -database "postgresql://postgres:postgres@localhost:5432/vedo-testovi?sslmode=disable" -verbose up
+	migrate -path db -database "postgresql://postgres:postgres@localhost:5432/vedodriver-testovi?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path db -database "postgresql://postgres:postgres@localhost:5432/vedo-testovi?sslmode=disable" -verbose down
+	migrate -path db -database "postgresql://postgres:postgres@localhost:5432/vedodriver-testovi?sslmode=disable" -verbose down
 
 .PHONY: postgres createdb dropdb migrateup migratedown
