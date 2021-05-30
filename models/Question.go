@@ -7,16 +7,17 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
 type Question struct {
-	ID        uint32    `gorm:"primary_key;auto_increment" json:"id"`
-	Name      string    `gorm:"size:1000;not null;" json:"name"`
-	Answers   []string  `gorm:"type:string[];not null;" json:"answers"`
-	Correct   []string  `gorm:"type:string[];not null;" json:"correct"`
-	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	GroupID   uint32    `gorm:"type:bigserial;not null;" json:"group_id"`
-	TestID    []uint32  `gorm:"type:bigserial[];" json:"test_id"`
+	ID        uint32         `gorm:"primary_key;auto_increment" json:"id"`
+	Name      string         `gorm:"size:1000;not null;" json:"name"`
+	Answers   pq.StringArray `gorm:"type:text[];not null;" json:"answers"`
+	Correct   pq.StringArray `gorm:"type:text[];not null;" json:"correct"`
+	CreatedAt time.Time      `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	GroupID   uint32         `gorm:"type:bigserial;not null;" json:"group_id"`
+	TestID    pq.Int64Array  `gorm:"type:bigserial[];" json:"test_id"`
 }
 
 func (q *Question) FillFields() {
@@ -83,11 +84,11 @@ func (q *Question) FindQuestionById(db *gorm.DB, qid uint32) (*Question, error) 
 func (q *Question) UpdateQuestion(db *gorm.DB, qid uint32) (*Question, error) {
 
 	db = db.Debug().Model(&Question{}).Where("id = ?", qid).Take(&Question{}).UpdateColumns(map[string]interface{}{
-		"name":    q.Name,
-		"answers": q.Answers,
-		"correct": q.Correct,
-		"groupid": q.GroupID,
-		"testid":  q.TestID,
+		"name":     q.Name,
+		"answers":  q.Answers,
+		"correct":  q.Correct,
+		"group_id": q.GroupID,
+		"test_id":  q.TestID,
 	})
 
 	if db.Error != nil {

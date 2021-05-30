@@ -14,7 +14,7 @@ CREATE TABLE "questions" (
   "correct" varchar[] NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "group_id" bigserial NOT NULL,
-  "test_id" bigserial
+  "test_id" bigserial NULL
 );
 
 CREATE TABLE "groups" (
