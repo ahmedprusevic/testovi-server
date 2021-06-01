@@ -34,6 +34,14 @@ func CreateRoutes() *mux.Router {
 	r.HandleFunc("/questions/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuth(server.UpdateQuestion))).Methods("PUT")
 	r.HandleFunc("/questions/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuth(server.DeleteQuestion))).Methods("DELETE")
 
+	//Tests
+
+	r.HandleFunc("/tests", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuth(server.CreateTest))).Methods("POST")
+	r.HandleFunc("/tests", middlewares.SetMiddlewareJSON(server.GetTests)).Methods("GET")
+	r.HandleFunc("/tests/{id}", middlewares.SetMiddlewareJSON(server.GetTest)).Methods("GET")
+	r.HandleFunc("/tests/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuth(server.UpdateTest))).Methods("PUT")
+	r.HandleFunc("/tests/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuth(server.DeleteTest))).Methods("DELETE")
+
 	//Login
 
 	r.HandleFunc("/auth/login", middlewares.SetMiddlewareJSON(server.Login)).Methods("POST")
