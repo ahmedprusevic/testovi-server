@@ -15,6 +15,12 @@ type Test struct {
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
+type IntersectionTestQuestion struct {
+	ID         uint32
+	QuestionID uint32 `gorm:"foreignkey:question_id"`
+	TestID     uint32 `gorm:"foreignkey:test_id"`
+}
+
 func (t *Test) FillFields() {
 	t.ID = 0
 	t.Name = html.EscapeString(strings.TrimSpace(t.Name))
@@ -97,5 +103,25 @@ func (t *Test) DeleteTest(db *gorm.DB, tid uint32) (int64, error) {
 	}
 
 	return db.RowsAffected, nil
+
+}
+
+func (t *Test) AddQuestionToTest(db *gorm.DB, tid uint32, qid uint32) (*IntersectionTestQuestion, error) {
+
+	intersection := IntersectionTestQuestion{TestID: tid, QuestionID: qid}
+
+	err := db.Debug().Table("test_questions").Where("question_id = ?", qid).Where("test_id = ?", tid).Find(&IntersectionTestQuestion{}).Error
+
+	if err == nil {
+		return &IntersectionTestQuestion{}, nil
+	}
+
+	err = db.Debug().Table("test_questions").Create(&intersection).Error
+
+	if err != nil {
+		return &IntersectionTestQuestion{}, err
+	}
+
+	return &intersection, nil
 
 }

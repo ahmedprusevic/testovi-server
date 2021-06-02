@@ -13,8 +13,7 @@ CREATE TABLE "questions" (
   "answers" varchar[] NOT NULL,
   "correct" varchar[] NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "group_id" bigserial NOT NULL,
-  "test_id" bigserial NULL
+  "group_id" bigserial NOT NULL
 );
 
 CREATE TABLE "groups" (
@@ -36,8 +35,6 @@ CREATE TABLE "test_questions" (
 );
 
 ALTER TABLE "questions" ADD FOREIGN KEY ("group_id") REFERENCES "groups" ("id");
-
-ALTER TABLE "questions" ADD FOREIGN KEY ("test_id") REFERENCES "tests" ("id");
 
 ALTER TABLE "test_questions" ADD FOREIGN KEY ("question_id") REFERENCES "questions" ("id");
 

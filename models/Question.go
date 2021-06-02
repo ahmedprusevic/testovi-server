@@ -17,7 +17,7 @@ type Question struct {
 	Correct   pq.StringArray `gorm:"type:text[];not null;" json:"correct"`
 	CreatedAt time.Time      `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	GroupID   uint32         `gorm:"type:bigserial;not null;" json:"group_id"`
-	TestID    pq.Int64Array  `gorm:"type:bigserial[];" json:"test_id"`
+	TestID    pq.Int32Array  `json:"test_id" gorm:"-"`
 }
 
 func (q *Question) FillFields() {
@@ -43,11 +43,26 @@ func (q *Question) Validate() error {
 }
 
 func (q *Question) SaveQuestion(db *gorm.DB) (*Question, error) {
+	var err error
 
-	err := db.Debug().Create(&q).Error
+	err = db.Debug().Create(&q).Error
 
 	if err != nil {
 		return &Question{}, err
+	}
+
+	if len(q.TestID) != 0 {
+		for _, i := range q.TestID {
+			t := Test{}
+			err = db.Debug().Model(&t).Where("id = ?", i).Error
+			if err != nil {
+				return &Question{}, err
+			}
+			_, err := t.AddQuestionToTest(db, uint32(i), uint32(q.ID))
+			if err != nil {
+				return &Question{}, err
+			}
+		}
 	}
 
 	return q, nil
