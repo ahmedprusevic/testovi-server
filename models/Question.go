@@ -103,7 +103,6 @@ func (q *Question) UpdateQuestion(db *gorm.DB, qid uint32) (*Question, error) {
 		"answers":  q.Answers,
 		"correct":  q.Correct,
 		"group_id": q.GroupID,
-		"test_id":  q.TestID,
 	})
 
 	if db.Error != nil {
@@ -114,6 +113,20 @@ func (q *Question) UpdateQuestion(db *gorm.DB, qid uint32) (*Question, error) {
 
 	if err != nil {
 		return &Question{}, nil
+	}
+
+	if len(q.TestID) != 0 {
+		for _, i := range q.TestID {
+			t := Test{}
+			err = db.Debug().Model(&t).Where("id = ?", i).Error
+			if err != nil {
+				return &Question{}, err
+			}
+			_, err := t.AddQuestionToTest(db, uint32(i), uint32(q.ID))
+			if err != nil {
+				return &Question{}, err
+			}
+		}
 	}
 
 	return q, nil

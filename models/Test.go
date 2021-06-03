@@ -58,19 +58,31 @@ func (t *Test) FindAllTests(db *gorm.DB) (*[]Test, error) {
 	return &tests, nil
 }
 
-func (t *Test) FindTestById(db *gorm.DB, tid uint32) (*Test, error) {
+func (t *Test) FindTestById(db *gorm.DB, tid uint32) (*[]*Question, error) {
 
-	err := db.Debug().Model(Test{}).Where("id = ?", tid).Take(&t).Error
+	question := Question{}
+
+	questions := []*Question{}
+
+	qids := []IntersectionTestQuestion{}
+
+	err := db.Debug().Table("test_questions").Where("id = ?", tid).Limit(40).Find(&qids).Error
 
 	if err != nil {
-		return &Test{}, err
+		return &[]*Question{}, err
 	}
 
-	if gorm.IsRecordNotFoundError(err) {
-		return &Test{}, err
+	for _, i := range qids {
+		q, err := question.FindQuestionById(db, i.QuestionID)
+
+		if err != nil {
+			return &questions, err
+		}
+
+		questions = append(questions, q)
 	}
 
-	return t, nil
+	return &questions, nil
 
 }
 
