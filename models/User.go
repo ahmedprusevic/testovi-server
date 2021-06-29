@@ -21,6 +21,13 @@ type User struct {
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
+type JsonUser struct {
+	ID    uint32
+	Name  string
+	Email string
+	Role  string
+}
+
 func VerifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
@@ -111,15 +118,18 @@ func (u *User) FindAllUsers(db *gorm.DB) (*[]User, error) {
 
 }
 
-func (u *User) FindUserById(db *gorm.DB, uid uint32) (*User, error) {
+func (u *User) FindUserById(db *gorm.DB, uid uint32) (*JsonUser, error) {
 	err := db.Debug().Model(User{}).Where("id = ?", uid).Take(&u).Error
 	if err != nil {
-		return &User{}, err
+		return &JsonUser{}, err
 	}
 	if gorm.IsRecordNotFoundError(err) {
-		return &User{}, errors.New("user not found")
+		return &JsonUser{}, errors.New("user not found")
 	}
-	return u, err
+
+	user := JsonUser{Email: u.Email, ID: u.ID, Name: u.Name, Role: u.Role}
+
+	return &user, err
 }
 
 func (u *User) UpdateUser(db *gorm.DB, uid uint32) (*User, error) {

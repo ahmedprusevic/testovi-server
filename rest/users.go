@@ -70,14 +70,13 @@ func (s *Server) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	uid, err := strconv.ParseUint(vars["id"], 10, 32)
+	uid, err := auth.IdFromToken(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 	user := models.User{}
-	userRes, err := user.FindUserById(s.DB, uint32(uid))
+	userRes, err := user.FindUserById(s.DB, uid)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
