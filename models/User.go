@@ -128,7 +128,6 @@ func (u *User) FindUserById(db *gorm.DB, uid uint32) (*JsonUser, error) {
 	}
 
 	user := JsonUser{Email: u.Email, ID: u.ID, Name: u.Name, Role: u.Role}
-
 	return &user, err
 }
 

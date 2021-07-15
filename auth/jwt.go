@@ -18,7 +18,7 @@ func CreateToken(userID int32) (string, error) {
 	c["authorized"] = true
 	c["user_id"] = userID
 	//set token exparation after 3 hours
-	c["exp"] = time.Now().Add(time.Hour * 3).Unix()
+	c["exp"] = time.Now().Add(time.Hour * 3600).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	return token.SignedString([]byte(os.Getenv("API_SECRET")))
@@ -29,7 +29,7 @@ func ValidateToken(r *http.Request) error {
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(os.Getenv("API_SECRET")), nil
 	})
@@ -59,7 +59,7 @@ func IdFromToken(r *http.Request) (uint32, error) {
 	tokenString := ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method %v", token.Header["alg"])
 		}
 		return []byte(os.Getenv("API_SECRET")), nil
 	})
